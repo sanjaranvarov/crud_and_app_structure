@@ -9,7 +9,7 @@ class HomeController extends ChangeNotifier {
   bool isLoading = false;
   List<Item> items = [];
 
-  Future<void> getAllProducts() async {
+  Future<void> getAllItems() async {
     String? result = await NetworkService.gET(
         NetworkService.apiITEM, NetworkService.emptyParams());
     items = itemFromJson(result!);
@@ -17,7 +17,8 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateProduct(Item item) async {
+  // update
+  Future<void> updateItems(Item item) async {
     final updatedProduct = {
       'id': item.id,
       'name': item.name,
@@ -27,16 +28,16 @@ class HomeController extends ChangeNotifier {
 
     await NetworkService.put('${NetworkService.apiITEM}/${item.id}',
         updatedProduct);
-    await getAllProducts();
+    await getAllItems();
   }
 
   Future<void> deleteProduct(String productId) async {
     await NetworkService.delete('${NetworkService.apiITEM}/$productId');
-    await getAllProducts();
+    await getAllItems();
   }
 
   void initState(BuildContext context) {
-    getAllProducts();
+    getAllItems();
   }
 
   Future<void> editUserInfo(BuildContext context, String? id) async {
@@ -206,7 +207,7 @@ class HomeController extends ChangeNotifier {
                           name: updateNameController.text.trim(),
                           description: updateDescController.text.trim(),
                           price: updatePriceController.text.trim());
-                      await updateProduct(item).then((value) {
+                      await updateItems(item).then((value) {
                         Navigator.pop(context);
                       });
                     },
