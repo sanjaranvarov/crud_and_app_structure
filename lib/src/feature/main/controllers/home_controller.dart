@@ -1,3 +1,4 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:crud_and_app_structure/src/core/service/network_service.dart';
 import 'package:crud_and_app_structure/src/data/entity/item_model.dart';
@@ -8,6 +9,36 @@ class HomeController extends ChangeNotifier {
   TextEditingController updatePriceController = TextEditingController();
   bool isLoading = false;
   List<Item> items = [];
+
+  final remoteConfig = FirebaseRemoteConfig.instance;
+
+  Map<String, Color> colors = {
+    "blue":Colors.blue,
+    "yellow":Colors.yellow,
+    "red":Colors.red,
+    "green":Colors.green,
+    "grey":Colors.grey,
+    "pink":Colors.pink,
+    "white":Colors.white,
+    "purple": const Color.fromRGBO(99, 7, 181, 1)
+  };
+
+  String backgroundColor = "white";
+
+  Future<void> fetchData() async {
+    await remoteConfig.fetchAndActivate().then((value) {
+      backgroundColor = remoteConfig.getString("background_color");
+    });
+  }
+
+  Future<void> initialConfig() async{
+    remoteConfig.setDefaults({"background_color" : backgroundColor,});
+    await fetchData();
+    remoteConfig.onConfigUpdated.listen((event) async{
+      await fetchData();
+      notifyListeners();
+    });
+  }
 
   Future<void> getAllItems() async {
     String? result = await NetworkService.gET(
@@ -38,6 +69,11 @@ class HomeController extends ChangeNotifier {
 
   void initState(BuildContext context) {
     getAllItems();
+    initialConfig();
+    remoteConfig.onConfigUpdated.listen((event) async{
+      await remoteConfig.activate();
+      notifyListeners();
+    });
   }
 
   Future<void> editUserInfo(BuildContext context, String? id) async {
@@ -233,3 +269,5 @@ class HomeController extends ChangeNotifier {
     );
   }
 }
+
+

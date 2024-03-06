@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/home_controller.dart';
@@ -44,8 +45,7 @@ class HomePage extends StatelessWidget {
                                   padding: const EdgeInsets.all(20),
                                   width: MediaQuery.of(context).size.width,
                                   decoration: BoxDecoration(
-                                    color: Colors.blueAccent,
-                                    // controller.colors[controller.backgroundColor],
+                                    color: controller.colors[controller.backgroundColor],
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Column(
@@ -87,6 +87,14 @@ class HomePage extends StatelessWidget {
                                               color: Colors.redAccent,
                                             ),
                                           ),
+                                          GestureDetector(
+                                            onTap: (){
+                                              FirebaseCrashlytics.instance.crash();
+                                            },
+                                            child: const Icon(Icons.error,
+                                            color: Colors.blueAccent
+                                            ),
+                                          )
                                         ],
                                       ),
                                       Text(
